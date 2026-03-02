@@ -1,0 +1,11 @@
+# Claude Code internal files
+.claude/
+
+# Node build scripts (temporaires)
+_build_*.js
+_logo_fragment.html
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
