@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Réserver votre séance BM_Repair — Institut spécialisé dans le bien-être maternel à Dakar.">
+    <meta name="theme-color" content="#3DAB8A">
+    <title>Réserver — BM_Repair</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+    /* =================================================================
+       RESERVATION — Styles spécifiques (Luxe Léger Design System)
+       ================================================================= */
+
+    /* Header */
+    .res-header {
+        position: sticky; top: 0; z-index: 100;
+        background: rgba(250,252,251,0.92);
+        backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+        border-bottom: 1px solid var(--gray-200);
+        padding: 0.85rem 0;
+    }
+    .res-header__inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+    .res-back {
+        display: inline-flex; align-items: center; gap: 0.4rem;
+        font-size: 0.82rem; color: var(--gray-500); text-decoration: none;
+        transition: color var(--dur-fast) ease;
+    }
+    .res-back:hover { color: var(--green); }
+    .res-back svg { width: 16px; height: 16px; }
+
+    /* Main */
+    .res-main { padding: 2.5rem 0 7rem; min-height: calc(100vh - 62px); }
+
+    /* Hero */
+    .res-hero { text-align: center; margin-bottom: 2.5rem; }
+    .res-hero .t-label { justify-content: center; margin-bottom: 0.75rem; }
+    .res-hero .t-label::before { display: none; }
+    .res-hero__title { font-size: clamp(1.6rem, 4vw, 2.2rem); margin-bottom: 0.4rem; }
+    .res-hero__sub { font-size: 0.9rem; color: var(--gray-500); }
+
+    /* Progress stepper */
+    .res-progress {
+        display: flex; align-items: center; justify-content: center;
+        gap: 0; margin-bottom: 3rem;
+    }
+    .res-step-dot { position: relative; display: flex; flex-direction: column; align-items: center; gap: 0.35rem; }
+    .res-step-dot__circle {
+        width: 36px; height: 36px; border-radius: 50%;
+        border: 2px solid var(--gray-200); background: var(--white);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.78rem; font-weight: 600; color: var(--gray-300);
+        transition: all var(--dur-med) var(--ease-luxe); position: relative; z-index: 1;
+    }
+    .res-step-dot__label { font-size: 0.65rem; color: var(--gray-300); font-weight: 500; white-space: nowrap; transition: color var(--dur-med) ease; }
+    .res-step-dot.is-active .res-step-dot__circle { border-color: var(--green); background: var(--green); color: var(--white); box-shadow: 0 0 0 4px rgba(61,171,138,0.15); }
+    .res-step-dot.is-active .res-step-dot__label { color: var(--green); font-weight: 600; }
+    .res-step-dot.is-done .res-step-dot__circle { border-color: var(--green); background: var(--green-light); color: var(--green-deep); }
+    .res-step-dot.is-done .res-step-dot__label { color: var(--gray-500); }
+    .res-step-line {
+        flex: 1; height: 2px; max-width: 72px; background: var(--gray-200);
+        margin-bottom: 1.35rem; transition: background var(--dur-med) ease;
+    }
+    .res-step-line.is-done { background: var(--green); }
+
+    /* Panels */
+    .res-panels-wrap { min-height: 300px; }
+    .res-panel { display: none; }
+    .res-panel.is-active { display: block; animation: resSlideIn 0.42s var(--ease-reveal) both; }
+    .res-panel.slide-back { animation: resSlideInBack 0.42s var(--ease-reveal) both; }
+    @keyframes resSlideIn { from { opacity: 0; transform: translateX(36px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes resSlideInBack { from { opacity: 0; transform: translateX(-36px); } to { opacity: 1; transform: translateX(0); } }
+    @media (prefers-reduced-motion: reduce) {
+        .res-panel.is-active, .res-panel.slide-back { animation: none; }
+    }
+
+    .res-panel-title { font-family: var(--font-serif); font-size: clamp(1.3rem,3vw,1.75rem); font-weight: 400; margin-bottom: 0.4rem; }
+    .res-panel-title em { font-style: italic; color: var(--green); }
+    .res-panel-sub { font-size: 0.88rem; color: var(--gray-500); margin-bottom: 1.75rem; }
+
+    /* --- Step 1: Points --- */
+    .point-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 1rem; }
+    @media (max-width: 480px) { .point-grid { grid-template-columns: 1fr; } }
+
+    .point-card {
+        position: relative; cursor: pointer; border-radius: 16px;
+        border: 2px solid var(--gray-200); padding: 1.25rem 1rem;
+        background: var(--white); display: flex; align-items: center; gap: 0.9rem;
+        transition: border-color var(--dur-fast) ease, box-shadow var(--dur-fast) ease, transform var(--dur-fast) var(--ease-spring);
+        -webkit-tap-highlight-color: transparent;
+    }
+    .point-card input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+    .point-card:active { transform: scale(0.97); }
+    .point-card__icon {
+        width: 42px; height: 42px; border-radius: 11px; background: var(--green-light);
+        display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--green-deep);
+        transition: background var(--dur-fast) ease, color var(--dur-fast) ease;
+    }
+    .point-card__icon svg { width: 20px; height: 20px; }
+    .point-card__body { flex: 1; min-width: 0; }
+    .point-card__name { font-weight: 500; font-size: 0.92rem; color: var(--charcoal); }
+    .point-card__sub { font-size: 0.75rem; color: var(--gray-500); margin-top: 0.1rem; }
+    .point-card__check {
+        width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--gray-200);
+        display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        transition: all var(--dur-fast) ease; color: transparent;
+    }
+    .point-card__check svg { width: 11px; height: 11px; }
+    .point-card.is-selected { border-color: var(--green); box-shadow: 0 0 0 4px rgba(61,171,138,0.1); }
+    .point-card.is-selected .point-card__icon { background: var(--green); color: var(--white); }
+    .point-card.is-selected .point-card__check { background: var(--green); border-color: var(--green); color: var(--white); }
+
+    /* --- Step 2: Prestations accordion --- */
+    .cat-list { display: flex; flex-direction: column; gap: 0.75rem; }
+    .cat-block { border: 1.5px solid var(--gray-200); border-radius: 14px; overflow: hidden; background: var(--white); }
+    .cat-header {
+        width: 100%; display: flex; align-items: center; gap: 0.75rem;
+        padding: 1rem 1.1rem; background: none; border: none; cursor: pointer;
+        text-align: left; -webkit-tap-highlight-color: transparent;
+        transition: background var(--dur-fast) ease;
+    }
+    .cat-header:hover { background: var(--gray-50); }
+    .cat-header:active { background: var(--gray-100); }
+    .cat-header__info { flex: 1; min-width: 0; }
+    .cat-header__name { font-weight: 500; font-size: 0.9rem; color: var(--charcoal); }
+    .cat-header__ctx { font-size: 0.72rem; color: var(--gray-500); margin-top: 0.1rem; }
+    .cat-header__dur { font-size: 0.7rem; font-weight: 600; color: var(--green-deep); background: var(--green-light); padding: 0.2rem 0.55rem; border-radius: 100px; white-space: nowrap; flex-shrink: 0; }
+    .cat-chevron { width: 16px; height: 16px; color: var(--gray-300); transition: transform var(--dur-fast) ease; flex-shrink: 0; }
+    .cat-block.is-open .cat-chevron { transform: rotate(180deg); }
+    .cat-body { display: none; flex-direction: column; gap: 0.5rem; padding: 0 0.9rem 0.9rem; }
+    .cat-block.is-open .cat-body { display: flex; }
+
+    .presta-card {
+        display: flex; align-items: center; gap: 0.75rem;
+        padding: 0.85rem 1rem; border-radius: 10px;
+        border: 1.5px solid var(--gray-200); cursor: pointer;
+        background: var(--gray-50); position: relative;
+        transition: border-color var(--dur-fast) ease, background var(--dur-fast) ease, transform var(--dur-fast) var(--ease-spring);
+        -webkit-tap-highlight-color: transparent;
+    }
+    .presta-card input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+    .presta-card:active { transform: scale(0.98); }
+    .presta-card__name { flex: 1; font-size: 0.88rem; color: var(--charcoal); }
+    .presta-card__price { font-weight: 600; font-size: 0.85rem; color: var(--green-deep); white-space: nowrap; }
+    .presta-card__check {
+        width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--gray-200);
+        display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        transition: all var(--dur-fast) ease; color: transparent;
+    }
+    .presta-card__check svg { width: 10px; height: 10px; }
+    .presta-card.is-selected { border-color: var(--green); background: var(--green-light); }
+    .presta-card.is-selected .presta-card__check { background: var(--green); border-color: var(--green); color: var(--white); }
+
+    /* --- Step 3: Date & Time --- */
+    .date-time-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    @media (max-width: 580px) { .date-time-grid { grid-template-columns: 1fr; } }
+    .dt-label { display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gray-500); margin-bottom: 0.85rem; }
+    .date-input {
+        width: 100%; padding: 0.9rem 1.1rem; border: 1.5px solid var(--gray-200); border-radius: 12px;
+        font-family: var(--font-sans); font-size: 0.92rem; color: var(--charcoal); background: var(--white);
+        outline: none; cursor: pointer; transition: border-color var(--dur-fast) ease, box-shadow var(--dur-fast) ease;
+    }
+    .date-input:focus, .date-input.is-valid { border-color: var(--green); box-shadow: 0 0 0 4px rgba(61,171,138,0.1); }
+    .date-error { font-size: 0.78rem; color: var(--pink-deep); margin-top: 0.4rem; display: none; }
+    .date-error.is-visible { display: block; }
+
+    .time-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.5rem; }
+    .time-slot {
+        padding: 0.65rem 0.4rem; border-radius: 10px; border: 1.5px solid var(--gray-200);
+        background: var(--white); font-family: var(--font-sans); font-size: 0.88rem; font-weight: 500;
+        color: var(--charcoal); cursor: pointer; text-align: center;
+        transition: all var(--dur-fast) var(--ease-spring); -webkit-tap-highlight-color: transparent;
+    }
+    .time-slot:active { transform: scale(0.95); }
+    .time-slot.is-selected { background: var(--green); border-color: var(--green); color: var(--white); box-shadow: 0 4px 14px rgba(61,171,138,0.28); }
+
+    /* --- Step 4: Info + Recap --- */
+    .step4-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+    @media (max-width: 640px) { .step4-grid { grid-template-columns: 1fr; } }
+
+    .step4-field { margin-bottom: 1rem; }
+    .step4-field label { display: block; font-size: 0.76rem; font-weight: 500; color: var(--charcoal); margin-bottom: 0.35rem; letter-spacing: 0.03em; }
+    .step4-field input {
+        width: 100%; padding: 0.82rem 1.05rem; border: 1.5px solid var(--gray-200); border-radius: 11px;
+        font-family: var(--font-sans); font-size: 0.9rem; color: var(--charcoal); background: var(--white);
+        outline: none; transition: border-color var(--dur-fast) ease, box-shadow var(--dur-fast) ease;
+    }
+    .step4-field input:focus { border-color: var(--green); box-shadow: 0 0 0 4px rgba(61,171,138,0.1); }
+    .step4-field input::placeholder { color: var(--gray-300); }
+    .field-note { font-size: 0.74rem; color: var(--gray-500); margin-top: 0.25rem; }
+
+    .recap-card {
+        background: var(--charcoal); color: var(--white);
+        border-radius: 18px; padding: 1.6rem; position: sticky; top: 80px;
+    }
+    .recap-card__title { font-family: var(--font-serif); font-size: 1.1rem; font-weight: 400; margin-bottom: 1.2rem; color: rgba(255,255,255,0.9); }
+    .recap-row { padding: 0.65rem 0; border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .recap-row:last-child { border-bottom: none; }
+    .recap-row__label { font-size: 0.67rem; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.35); margin-bottom: 0.2rem; }
+    .recap-row__value { font-size: 0.9rem; color: rgba(255,255,255,0.88); font-weight: 500; }
+    .recap-row__price { font-size: 1rem; color: var(--green-muted); font-weight: 600; font-family: var(--font-serif); }
+
+    .wa-btn {
+        display: flex; align-items: center; justify-content: center; gap: 0.7rem;
+        width: 100%; padding: 1rem 1.25rem; margin-top: 1.25rem;
+        background: #25D366; color: white; border: none; border-radius: 12px;
+        font-family: var(--font-sans); font-size: 0.92rem; font-weight: 600;
+        cursor: pointer; text-decoration: none;
+        box-shadow: 0 4px 20px rgba(37,211,102,0.3);
+        transition: transform var(--dur-fast) var(--ease-spring), box-shadow var(--dur-fast) ease;
+        -webkit-tap-highlight-color: transparent;
+    }
+    .wa-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(37,211,102,0.4); }
+    .wa-btn:active { transform: scale(0.97); }
+    .wa-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+    /* Footer nav */
+    .res-footer {
+        position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
+        background: rgba(250,252,251,0.95); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+        border-top: 1px solid var(--gray-200); padding: 0.85rem 0;
+    }
+    .res-footer__inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+
+    .res-btn-prev {
+        display: inline-flex; align-items: center; gap: 0.45rem;
+        padding: 0.8rem 1.4rem; border-radius: 100px;
+        border: 1.5px solid var(--gray-200); background: var(--white);
+        font-family: var(--font-sans); font-size: 0.85rem; font-weight: 500; color: var(--charcoal);
+        cursor: pointer; transition: all var(--dur-fast) ease; -webkit-tap-highlight-color: transparent;
+    }
+    .res-btn-prev:hover { border-color: var(--green); color: var(--green); }
+    .res-btn-prev:active { transform: scale(0.97); }
+    .res-btn-prev svg { width: 15px; height: 15px; }
+
+    .res-btn-next {
+        display: inline-flex; align-items: center; gap: 0.45rem;
+        padding: 0.8rem 1.8rem; border-radius: 100px; border: none;
+        background: var(--green); color: var(--white);
+        font-family: var(--font-sans); font-size: 0.85rem; font-weight: 600;
+        cursor: pointer; box-shadow: 0 4px 18px rgba(61,171,138,0.28);
+        transition: all var(--dur-fast) ease; -webkit-tap-highlight-color: transparent;
+    }
+    .res-btn-next:hover:not(:disabled) { background: var(--green-deep); transform: translateY(-1px); }
+    .res-btn-next:active:not(:disabled) { transform: scale(0.97); }
+    .res-btn-next:disabled { background: var(--gray-200); color: var(--gray-300); box-shadow: none; cursor: not-allowed; }
+    .res-btn-next svg { width: 15px; height: 15px; }
+
+    .step-counter { font-size: 0.78rem; color: var(--gray-500); font-weight: 500; }
+    </style>
+</head>
+
+<body>
+    <!-- HEADER -->
+    <header class="res-header">
+        <div class="container res-header__inner">
+            <a href="index.html" class="res-back">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Retour
+            </a>
+            <a href="index.html" class="nav__logo">
+                <img src="data:image/png;base64,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" alt="BM Repair" width="160" height="40" decoding="async">
+            </a>
+        </div>
+    </header>
+
+    <!-- MAIN -->
+    <main class="res-main">
+        <div class="container">
+
+            <!-- Hero -->
+            <div class="res-hero">
+                <div class="t-label">Réservation en ligne</div>
+                <h1 class="t-heading res-hero__title">Prendre <em>rendez-vous</em></h1>
+                <p class="res-hero__sub">Choisissez votre point, votre prestation et votre créneau en 4 étapes.</p>
+            </div>
+
+            <!-- Stepper progress -->
+            <div class="res-progress" role="list" aria-label="Progression de la réservation">
+                <div class="res-step-dot is-active" data-step="1" role="listitem">
+                    <div class="res-step-dot__circle" aria-current="step">1</div>
+                    <span class="res-step-dot__label">Point</span>
+                </div>
+                <div class="res-step-line" data-line="1-2"></div>
+                <div class="res-step-dot" data-step="2" role="listitem">
+                    <div class="res-step-dot__circle">2</div>
+                    <span class="res-step-dot__label">Prestation</span>
+                </div>
+                <div class="res-step-line" data-line="2-3"></div>
+                <div class="res-step-dot" data-step="3" role="listitem">
+                    <div class="res-step-dot__circle">3</div>
+                    <span class="res-step-dot__label">Créneau</span>
+                </div>
+                <div class="res-step-line" data-line="3-4"></div>
+                <div class="res-step-dot" data-step="4" role="listitem">
+                    <div class="res-step-dot__circle">4</div>
+                    <span class="res-step-dot__label">Confirmation</span>
+                </div>
+            </div>
+
+            <!-- Panels -->
+            <div class="res-panels-wrap">
+
+                <!-- STEP 1 — Choix du Point -->
+                <section class="res-panel is-active" data-panel="1" aria-label="Étape 1 : Choix du point">
+                    <p class="res-panel-title">Choisissez votre <em>Point</em></p>
+                    <p class="res-panel-sub">Sélectionnez le point BM_Repair le plus proche de chez vous.</p>
+                    <div class="point-grid">
+                        
+                        <label class="point-card" tabindex="0">
+                            <input type="radio" name="point" value="Point E Ouakam">
+                            <div class="point-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+                            <div class="point-card__body">
+                                <div class="point-card__name">Point E Ouakam</div>
+                                <div class="point-card__sub">Dakar, Sénégal</div>
+                            </div>
+                            <div class="point-card__check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+                        </label>
+                        
+                        <label class="point-card" tabindex="0">
+                            <input type="radio" name="point" value="Point Sacré Cœur 3">
+                            <div class="point-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+                            <div class="point-card__body">
+                                <div class="point-card__name">Point Sacré Cœur 3</div>
+                                <div class="point-card__sub">Dakar, Sénégal</div>
+                            </div>
+                            <div class="point-card__check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+                        </label>
+                        
+                        <label class="point-card" tabindex="0">
+                            <input type="radio" name="point" value="Point Almadies 2">
+                            <div class="point-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+                            <div class="point-card__body">
+                                <div class="point-card__name">Point Almadies 2</div>
+                                <div class="point-card__sub">Dakar, Sénégal</div>
+                            </div>
+                            <div class="point-card__check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+                        </label>
+                        
+                        <label class="point-card" tabindex="0">
+                            <input type="radio" name="point" value="Point Thiès">
+                            <div class="point-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+                            <div class="point-card__body">
+                                <div class="point-card__name">Point Thiès</div>
+                                <div class="point-card__sub">Thiès, Sénégal</div>
+                            </div>
+                            <div class="point-card__check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+                        </label>
+                    </div>
+                </section>
+
+                <!-- STEP 2 — Choix de la Prestation -->
+                <section class="res-panel" data-panel="2" aria-label="Étape 2 : Choix de la prestation">
+                    <p class="res-panel-title">Choisissez votre <em>Prestation</em></p>
+                    <p class="res-panel-sub">Sélectionnez la prestation souhaitée. Cliquez sur une catégorie pour la développer.</p>
+                    <div class="cat-list">
+                        
+                    <div class="cat-block is-open" id="cat-simple">
+                        <button class="cat-header" aria-expanded="true" aria-controls="cat-body-simple" type="button">
+                            <div class="cat-header__info">
+                                <div class="cat-header__name">Thérapie Traditionnelle Simple</div>
+                                <div class="cat-header__ctx">Remise en forme · Post accouchement · Post avortement · Post nuptial</div>
+                            </div>
+                            <span class="cat-header__dur">30 min</span>
+                            <svg class="cat-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="cat-body" id="cat-body-simple">
+                            <label class="presta-card" tabindex="0">
+                                <input type="radio" name="presta" value='{"cat":"TT Simple","name":"Séance simple","price":"11 000"}'>
+                                <span class="presta-card__name">Séance simple</span>
+                                <span class="presta-card__price">11 000&thinsp;FCFA</span>
+                                <div class="presta-card__check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+                            </label>
+                            <label class="presta-card" tabindex="0">
+                                <input type="radio" name="presta" value='{"cat":"TT Simple","name":"Abonnement 3 séances","price":"30 000"}'>
+                                <span class="presta-card__name">Abonnement 3 séances</span>
+                                <span class="presta-card__price">30 000&thinsp;FCFA</span>
+                                <div class="presta-card__check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+                            </label>
+                            <label class="presta-card" tabindex="0">
+                                <input type="radio" name="presta" value='{"cat":"TT Simple","name":"Abonnement 4 séances","price":"40 000"}'>
+                                <span class="presta-card__name">Abonnement 4 séances</span>
+                                <span class="presta-card__price">40 000&thinsp;FCFA</span>
+                                <div class="presta-card__check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="cat-block" id="cat-ultra">
+                        <button class="cat-header" aria-expanded="false" aria-controls="cat-body-ultra" type="button">
+                            <div class="cat-header__info">
+                                <div class="cat-header__name">Thérapie Traditionnelle Ultra</div>
+                                <div class="cat-header__ctx">Remise en forme · Post accouchement · Post avortement · Post nuptial</div>
+                            </div>
+                            <span class="cat-header__dur">45 min</span>
+                            <svg class="cat-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="cat-body" id="cat-body-ultra">
+                            <label class="presta-card" tabindex="0">
+                                <input type="radio" name="presta" value='{"cat":"TT Ultra","name":"Séance ultra","price":"17 000"}'>
+                                <span class="presta-card__name">Séance ultra</span>
+                                <span class="presta-card__price">17 000&thinsp;FCFA</span>
+                                <div class="presta-card__check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+                            </label>
+                            <label class="presta-card" tabindex="0">
+                                <input type="radio" name="presta" value='{"cat":"TT Ultra","name":"Abonnement 3 séances","price":"50 000"}'>
+                                <span class="presta-card__name">Abonnement 3 séances</span>
+                                <span class="presta-card__price">50 000&thinsp;FCFA</span>
+                                <div class="presta-card__check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+                            </label>
+                            <label class="presta-card" tabindex="0">
+                                <input type="radio" name="presta" value='{"cat":"TT Ultra","name":"Abonnement 4 séances","price":"65 000"}'>
+                                <span class="presta-card__name">Abonnement 4 séances</span>
+                                <span class="presta-card__price">65 000&thinsp;FCFA</span>
+                                <div class="presta-card__check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="cat-block" id="cat-nne">
+                        <button class="cat-header" aria-expanded="false" aria-controls="cat-body-nne" type="button">
+                            <div class="cat-header__info">
+                                <div class="cat-header__name">Thérapie Traditionnelle Nouveau-né</div>
+                                <div class="cat-header__ctx">À partir de 3 kg</div>
+                            </div>
+                            
+                            <svg class="cat-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="cat-body" id="cat-body-nne">
+                            <label class="presta-card" tabindex="0">
+                                <input type="radio" name="presta" value='{"cat":"TT Nouveau-né","name":"Séance unique","price":"6 000"}'>
+                                <span class="presta-card__name">Séance unique</span>
+                                <span class="presta-card__price">6 000&thinsp;FCFA</span>
+                                <div class="presta-card__check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+                            </label>
+                            <label class="presta-card" tabindex="0">
+                                <input type="radio" name="presta" value='{"cat":"TT Nouveau-né","name":"Abonnement 4 séances","price":"20 000"}'>
+                                <span class="presta-card__name">Abonnement 4 séances</span>
+                                <span class="presta-card__price">20 000&thinsp;FCFA</span>
+                                <div class="presta-card__check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+                            </label>
+                            <label class="presta-card" tabindex="0">
+                                <input type="radio" name="presta" value='{"cat":"TT Nouveau-né","name":"Abonnement 6 séances","price":"30 000"}'>
+                                <span class="presta-card__name">Abonnement 6 séances</span>
+                                <span class="presta-card__price">30 000&thinsp;FCFA</span>
+                                <div class="presta-card__check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="cat-block" id="cat-prenatal">
+                        <button class="cat-header" aria-expanded="false" aria-controls="cat-body-prenatal" type="button">
+                            <div class="cat-header__info">
+                                <div class="cat-header__name">Activités Prénatales</div>
+                                
+                            </div>
+                            
+                            <svg class="cat-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="cat-body" id="cat-body-prenatal">
+                            <label class="presta-card" tabindex="0">
+                                <input type="radio" name="presta" value='{"cat":"Prénatales","name":"Séance unique","price":"15 000"}'>
+                                <span class="presta-card__name">Séance unique</span>
+                                <span class="presta-card__price">15 000&thinsp;FCFA</span>
+                                <div class="presta-card__check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+                            </label>
+                            <label class="presta-card" tabindex="0">
+                                <input type="radio" name="presta" value='{"cat":"Prénatales","name":"5 séances","price":"50 000"}'>
+                                <span class="presta-card__name">5 séances</span>
+                                <span class="presta-card__price">50 000&thinsp;FCFA</span>
+                                <div class="presta-card__check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+                            </label>
+                            <label class="presta-card" tabindex="0">
+                                <input type="radio" name="presta" value='{"cat":"Prénatales","name":"10 séances","price":"95 000"}'>
+                                <span class="presta-card__name">10 séances</span>
+                                <span class="presta-card__price">95 000&thinsp;FCFA</span>
+                                <div class="presta-card__check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+                            </label>
+                            <label class="presta-card" tabindex="0">
+                                <input type="radio" name="presta" value='{"cat":"Prénatales","name":"16 séances","price":"155 000"}'>
+                                <span class="presta-card__name">16 séances</span>
+                                <span class="presta-card__price">155 000&thinsp;FCFA</span>
+                                <div class="presta-card__check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+                            </label>
+                            <label class="presta-card" tabindex="0">
+                                <input type="radio" name="presta" value='{"cat":"Prénatales","name":"22 séances","price":"200 000"}'>
+                                <span class="presta-card__name">22 séances</span>
+                                <span class="presta-card__price">200 000&thinsp;FCFA</span>
+                                <div class="presta-card__check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+                            </label>
+                            <label class="presta-card" tabindex="0">
+                                <input type="radio" name="presta" value='{"cat":"Prénatales","name":"Damp prénatal","price":"15 000"}'>
+                                <span class="presta-card__name">Damp prénatal</span>
+                                <span class="presta-card__price">15 000&thinsp;FCFA</span>
+                                <div class="presta-card__check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+                            </label>
+                            <label class="presta-card" tabindex="0">
+                                <input type="radio" name="presta" value='{"cat":"Prénatales","name":"Mon Terme","price":"20 000"}'>
+                                <span class="presta-card__name">Mon Terme</span>
+                                <span class="presta-card__price">20 000&thinsp;FCFA</span>
+                                <div class="presta-card__check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+                            </label>
+                            <label class="presta-card" tabindex="0">
+                                <input type="radio" name="presta" value='{"cat":"Prénatales","name":"Massage périnée / bain chaud","price":"15 000"}'>
+                                <span class="presta-card__name">Massage périnée / bain chaud</span>
+                                <span class="presta-card__price">15 000&thinsp;FCFA</span>
+                                <div class="presta-card__check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="cat-block" id="cat-autres">
+                        <button class="cat-header" aria-expanded="false" aria-controls="cat-body-autres" type="button">
+                            <div class="cat-header__info">
+                                <div class="cat-header__name">Autres Services</div>
+                                
+                            </div>
+                            
+                            <svg class="cat-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="cat-body" id="cat-body-autres">
+                            <label class="presta-card" tabindex="0">
+                                <input type="radio" name="presta" value='{"cat":"Autres","name":"GNAGNAFA (5 séances)","price":"50 000"}'>
+                                <span class="presta-card__name">GNAGNAFA (5 séances)</span>
+                                <span class="presta-card__price">50 000&thinsp;FCFA</span>
+                                <div class="presta-card__check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+                            </label>
+                            <label class="presta-card" tabindex="0">
+                                <input type="radio" name="presta" value='{"cat":"Autres","name":"YOUMA (3 séances)","price":"35 000"}'>
+                                <span class="presta-card__name">YOUMA (3 séances)</span>
+                                <span class="presta-card__price">35 000&thinsp;FCFA</span>
+                                <div class="presta-card__check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+                            </label>
+                            <label class="presta-card" tabindex="0">
+                                <input type="radio" name="presta" value='{"cat":"Autres","name":"Pack bébé et maman simple (8 séances)","price":"60 000"}'>
+                                <span class="presta-card__name">Pack bébé et maman simple (8 séances)</span>
+                                <span class="presta-card__price">60 000&thinsp;FCFA</span>
+                                <div class="presta-card__check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+                            </label>
+                            <label class="presta-card" tabindex="0">
+                                <input type="radio" name="presta" value='{"cat":"Autres","name":"Pack bébé et maman ultra (8 séances)","price":"85 000"}'>
+                                <span class="presta-card__name">Pack bébé et maman ultra (8 séances)</span>
+                                <span class="presta-card__price">85 000&thinsp;FCFA</span>
+                                <div class="presta-card__check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+                            </label>
+                            <label class="presta-card" tabindex="0">
+                                <input type="radio" name="presta" value='{"cat":"Autres","name":"Rééducation périnéale – Consultation","price":"20 000"}'>
+                                <span class="presta-card__name">Rééducation périnéale – Consultation</span>
+                                <span class="presta-card__price">20 000&thinsp;FCFA</span>
+                                <div class="presta-card__check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+                            </label>
+                            <label class="presta-card" tabindex="0">
+                                <input type="radio" name="presta" value='{"cat":"Autres","name":"Rééducation périnéale – Séance unique","price":"10 000"}'>
+                                <span class="presta-card__name">Rééducation périnéale – Séance unique</span>
+                                <span class="presta-card__price">10 000&thinsp;FCFA</span>
+                                <div class="presta-card__check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+                            </label>
+                            <label class="presta-card" tabindex="0">
+                                <input type="radio" name="presta" value='{"cat":"Autres","name":"Abonnement 4 séances post accouchement Simple + Gnagnafa","price":"85 000"}'>
+                                <span class="presta-card__name">Abonnement 4 séances post accouchement Simple + Gnagnafa</span>
+                                <span class="presta-card__price">85 000&thinsp;FCFA</span>
+                                <div class="presta-card__check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+                            </label>
+                            <label class="presta-card" tabindex="0">
+                                <input type="radio" name="presta" value='{"cat":"Autres","name":"Abonnement 4 séances post accouchement Ultra + Gnagnafa","price":"110 000"}'>
+                                <span class="presta-card__name">Abonnement 4 séances post accouchement Ultra + Gnagnafa</span>
+                                <span class="presta-card__price">110 000&thinsp;FCFA</span>
+                                <div class="presta-card__check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+                            </label>
+                            <label class="presta-card" tabindex="0">
+                                <input type="radio" name="presta" value='{"cat":"Autres","name":"Pack Bébé et Maman Simple + Gnagnafa","price":"105 000"}'>
+                                <span class="presta-card__name">Pack Bébé et Maman Simple + Gnagnafa</span>
+                                <span class="presta-card__price">105 000&thinsp;FCFA</span>
+                                <div class="presta-card__check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+                            </label>
+                            <label class="presta-card" tabindex="0">
+                                <input type="radio" name="presta" value='{"cat":"Autres","name":"Pack Bébé et Maman Ultra + Gnagnafa","price":"130 000"}'>
+                                <span class="presta-card__name">Pack Bébé et Maman Ultra + Gnagnafa</span>
+                                <span class="presta-card__price">130 000&thinsp;FCFA</span>
+                                <div class="presta-card__check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+                            </label>
+                            <label class="presta-card" tabindex="0">
+                                <input type="radio" name="presta" value='{"cat":"Autres","name":"Pack sama intimité 3 séances simple + Youma","price":"60 000"}'>
+                                <span class="presta-card__name">Pack sama intimité 3 séances simple + Youma</span>
+                                <span class="presta-card__price">60 000&thinsp;FCFA</span>
+                                <div class="presta-card__check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+                            </label>
+                            <label class="presta-card" tabindex="0">
+                                <input type="radio" name="presta" value='{"cat":"Autres","name":"Pack sama intimité 3 séances ultra + Youma","price":"80 000"}'>
+                                <span class="presta-card__name">Pack sama intimité 3 séances ultra + Youma</span>
+                                <span class="presta-card__price">80 000&thinsp;FCFA</span>
+                                <div class="presta-card__check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+                            </label>
+                        </div>
+                    </div>
+                    </div>
+                </section>
+
+                <!-- STEP 3 — Date & Heure -->
+                <section class="res-panel" data-panel="3" aria-label="Étape 3 : Date et heure">
+                    <p class="res-panel-title">Choisissez votre <em>Créneau</em></p>
+                    <p class="res-panel-sub">Nous sommes disponibles du lundi au samedi, de 8h à 17h.</p>
+                    <div class="date-time-grid">
+                        <div class="dt-section">
+                            <label class="dt-label" for="resDate">Date du rendez-vous</label>
+                            <div>
+                                <input type="date" class="date-input" id="resDate" name="date" min="2026-03-01" aria-label="Date du rendez-vous">
+                                <p class="date-error" id="dateError" role="alert">Nous sommes fermés le dimanche. Veuillez choisir un autre jour.</p>
+                            </div>
+                        </div>
+                        <div class="dt-section">
+                            <span class="dt-label">Heure</span>
+                            <div class="time-grid" role="group" aria-label="Créneaux horaires">
+                                <button type="button" class="time-slot" data-time="8h">8h</button>
+                                <button type="button" class="time-slot" data-time="9h">9h</button>
+                                <button type="button" class="time-slot" data-time="10h">10h</button>
+                                <button type="button" class="time-slot" data-time="11h">11h</button>
+                                <button type="button" class="time-slot" data-time="12h">12h</button>
+                                <button type="button" class="time-slot" data-time="14h">14h</button>
+                                <button type="button" class="time-slot" data-time="15h">15h</button>
+                                <button type="button" class="time-slot" data-time="16h">16h</button>
+                                <button type="button" class="time-slot" data-time="17h">17h</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- STEP 4 — Infos client + Récapitulatif -->
+                <section class="res-panel" data-panel="4" aria-label="Étape 4 : Informations et confirmation">
+                    <p class="res-panel-title">Vos <em>Informations</em></p>
+                    <p class="res-panel-sub">Remplissez vos coordonnées. La réservation sera envoyée via WhatsApp.</p>
+                    <div class="step4-grid">
+                        <div class="step4-form">
+                            <div class="step4-field">
+                                <label for="clientName">Nom complet <span style="color:var(--pink)">*</span></label>
+                                <input type="text" id="clientName" name="name" placeholder="Aminata Diallo" required autocomplete="name">
+                            </div>
+                            <div class="step4-field">
+                                <label for="clientPhone">Téléphone <span style="color:var(--pink)">*</span></label>
+                                <input type="tel" id="clientPhone" name="phone" placeholder="77 123 45 67" required autocomplete="tel">
+                            </div>
+                            <div class="step4-field">
+                                <label for="clientEmail">Email <span style="color:var(--gray-300);font-weight:400">(optionnel)</span></label>
+                                <input type="email" id="clientEmail" name="email" placeholder="votre@email.com" autocomplete="email">
+                                <p class="field-note">Nous vous enverrons une confirmation par email si renseigné.</p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <!-- Recap card -->
+                            <div class="recap-card">
+                                <div class="recap-card__title">Récapitulatif</div>
+                                <div class="recap-row">
+                                    <div class="recap-row__label">📍 Point</div>
+                                    <div class="recap-row__value" id="recapPoint">—</div>
+                                </div>
+                                <div class="recap-row">
+                                    <div class="recap-row__label">💆 Prestation</div>
+                                    <div class="recap-row__value" id="recapPresta">—</div>
+                                </div>
+                                <div class="recap-row">
+                                    <div class="recap-row__label">💰 Tarif</div>
+                                    <div class="recap-row__price" id="recapPrice">—</div>
+                                </div>
+                                <div class="recap-row">
+                                    <div class="recap-row__label">📅 Date</div>
+                                    <div class="recap-row__value" id="recapDate">—</div>
+                                </div>
+                                <div class="recap-row">
+                                    <div class="recap-row__label">🕐 Heure</div>
+                                    <div class="recap-row__value" id="recapTime">—</div>
+                                </div>
+                            </div>
+                            <!-- WhatsApp confirm button -->
+                            <a href="#" id="waConfirmBtn" class="wa-btn" target="_blank" rel="noopener noreferrer" role="button" style="display:none">
+                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M11.99 2.007C6.478 2.007 2 6.484 2 11.997c0 1.76.456 3.41 1.256 4.836L2 22l5.305-1.228A9.945 9.945 0 0011.99 22c5.512 0 9.99-4.478 9.99-9.99 0-5.514-4.478-9.993-9.99-9.993zm0 18.181a8.177 8.177 0 01-4.176-1.144l-.3-.178-3.149.729.763-3.073-.196-.315A8.178 8.178 0 013.818 12c0-4.516 3.676-8.19 8.172-8.19 4.497 0 8.173 3.674 8.173 8.19 0 4.515-3.676 8.188-8.173 8.188z"/></svg>
+                                Confirmer sur WhatsApp
+                            </a>
+                            <p id="waNote" style="font-size:0.75rem;color:var(--gray-500);margin-top:0.5rem;text-align:center;display:none">Remplissez votre nom et téléphone pour confirmer.</p>
+                        </div>
+                    </div>
+                </section>
+
+            </div><!-- /res-panels-wrap -->
+        </div><!-- /container -->
+    </main>
+
+    <!-- Footer nav: Prev / Next -->
+    <div class="res-footer" role="navigation" aria-label="Navigation entre étapes">
+        <div class="container res-footer__inner">
+            <button class="res-btn-prev" id="btnPrev" style="visibility:hidden" aria-label="Étape précédente">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Précédent
+            </button>
+            <span class="step-counter" id="stepCounter">Étape 1 sur 4</span>
+            <button class="res-btn-next" id="btnNext" disabled aria-label="Étape suivante">
+                Suivant <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- WhatsApp FAB -->
+    <a href="https://wa.me/221774674949?text=Bonjour%20BM_Repair%20%F0%9F%91%8B%20Je%20souhaite%20prendre%20rendez-vous%20svp%20!"
+       class="whatsapp-fab" target="_blank" rel="noopener noreferrer" aria-label="Contacter sur WhatsApp">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M11.99 2.007C6.478 2.007 2 6.484 2 11.997c0 1.76.456 3.41 1.256 4.836L2 22l5.305-1.228A9.945 9.945 0 0011.99 22c5.512 0 9.99-4.478 9.99-9.99 0-5.514-4.478-9.993-9.99-9.993zm0 18.181a8.177 8.177 0 01-4.176-1.144l-.3-.178-3.149.729.763-3.073-.196-.315A8.178 8.178 0 013.818 12c0-4.516 3.676-8.19 8.172-8.19 4.497 0 8.173 3.674 8.173 8.19 0 4.515-3.676 8.188-8.173 8.188z"/></svg>
+    </a>
+
+    <script>
+    (function () {
+        'use strict';
+
+        /* ─── State ─── */
+        var step = 1;
+        var totalSteps = 4;
+        var state = { point: null, presta: null, date: null, time: null };
+        var goingBack = false;
+
+        /* ─── DOM refs ─── */
+        var btnPrev    = document.getElementById('btnPrev');
+        var btnNext    = document.getElementById('btnNext');
+        var stepCtr    = document.getElementById('stepCounter');
+        var dateInput  = document.getElementById('resDate');
+        var dateError  = document.getElementById('dateError');
+        var waBtn      = document.getElementById('waConfirmBtn');
+        var waNote     = document.getElementById('waNote');
+        var nameInput  = document.getElementById('clientName');
+        var phoneInput = document.getElementById('clientPhone');
+
+        /* ─── Helpers ─── */
+        function fmtDate(str) {
+            if (!str) return '—';
+            var p = str.split('-');
+            return p[2] + '/' + p[1] + '/' + p[0];
+        }
+
+        function validate() {
+            if (step === 1) return !!state.point;
+            if (step === 2) return !!state.presta;
+            if (step === 3) return !!state.date && !!state.time;
+            if (step === 4) return nameInput.value.trim() !== '' && phoneInput.value.trim() !== '';
+            return false;
+        }
+
+        function updateNav() {
+            btnPrev.style.visibility = step === 1 ? 'hidden' : 'visible';
+            btnNext.disabled = !validate();
+            stepCtr.textContent = 'Étape ' + step + ' sur ' + totalSteps;
+            if (step === 4) {
+                btnNext.style.display = 'none';
+            } else {
+                btnNext.style.display = '';
+            }
+        }
+
+        function updateProgress() {
+            document.querySelectorAll('.res-step-dot').forEach(function (dot) {
+                var s = parseInt(dot.dataset.step);
+                dot.classList.toggle('is-active', s === step);
+                dot.classList.toggle('is-done', s < step);
+            });
+            document.querySelectorAll('.res-step-line').forEach(function (line, i) {
+                line.classList.toggle('is-done', i + 1 < step);
+            });
+        }
+
+        function showPanel(n) {
+            document.querySelectorAll('.res-panel').forEach(function (p) {
+                p.classList.remove('is-active', 'slide-back');
+                p.style.display = 'none';
+            });
+            var panel = document.querySelector('[data-panel="' + n + '"]');
+            panel.style.display = 'block';
+            if (goingBack) {
+                panel.classList.add('is-active', 'slide-back');
+            } else {
+                panel.classList.add('is-active');
+            }
+        }
+
+        function goTo(n) {
+            step = n;
+            showPanel(step);
+            updateProgress();
+            updateNav();
+            if (step === 4) updateRecap();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        /* ─── Selectable cards (points) ─── */
+        document.querySelectorAll('.point-card').forEach(function (card) {
+            card.addEventListener('click', function () {
+                var radio = card.querySelector('input[type="radio"]');
+                radio.checked = true;
+                state.point = radio.value;
+                document.querySelectorAll('.point-card').forEach(function (c) { c.classList.remove('is-selected'); });
+                card.classList.add('is-selected');
+                updateNav();
+            });
+            card.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); }
+            });
+        });
+
+        /* ─── Accordion categories ─── */
+        document.querySelectorAll('.cat-header').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var block = btn.closest('.cat-block');
+                var isOpen = block.classList.toggle('is-open');
+                btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            });
+        });
+
+        /* ─── Selectable prestation cards ─── */
+        document.querySelectorAll('.presta-card').forEach(function (card) {
+            card.addEventListener('click', function () {
+                var radio = card.querySelector('input[type="radio"]');
+                radio.checked = true;
+                try { state.presta = JSON.parse(radio.value.replace(/&#39;/g, "'")); } catch(e) { state.presta = { cat: '', name: radio.value, price: '' }; }
+                document.querySelectorAll('.presta-card').forEach(function (c) { c.classList.remove('is-selected'); });
+                card.classList.add('is-selected');
+                updateNav();
+            });
+            card.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); }
+            });
+        });
+
+        /* ─── Date picker ─── */
+        dateInput.addEventListener('change', function () {
+            var val = dateInput.value;
+            if (!val) { state.date = null; updateNav(); return; }
+            // Parse as local date to avoid UTC offset issues
+            var parts = val.split('-');
+            var d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+            if (d.getDay() === 0) {
+                dateInput.value = '';
+                state.date = null;
+                dateError.classList.add('is-visible');
+                dateInput.classList.remove('is-valid');
+            } else {
+                state.date = val;
+                dateError.classList.remove('is-visible');
+                dateInput.classList.add('is-valid');
+            }
+            updateNav();
+        });
+
+        /* ─── Time slots ─── */
+        document.querySelectorAll('.time-slot').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                state.time = btn.dataset.time;
+                document.querySelectorAll('.time-slot').forEach(function (b) { b.classList.remove('is-selected'); });
+                btn.classList.add('is-selected');
+                updateNav();
+            });
+        });
+
+        /* ─── Step 4 form inputs ─── */
+        [nameInput, phoneInput].forEach(function (inp) {
+            inp.addEventListener('input', function () { updateNav(); updateWaBtn(); });
+        });
+
+        /* ─── Recap ─── */
+        function updateRecap() {
+            document.getElementById('recapPoint').textContent  = state.point || '—';
+            document.getElementById('recapPresta').textContent = state.presta ? state.presta.cat + ' — ' + state.presta.name : '—';
+            document.getElementById('recapPrice').textContent  = state.presta ? state.presta.price + ' FCFA' : '—';
+            document.getElementById('recapDate').textContent   = fmtDate(state.date);
+            document.getElementById('recapTime').textContent   = state.time || '—';
+            updateWaBtn();
+        }
+
+        function updateWaBtn() {
+            var name  = nameInput.value.trim();
+            var phone = phoneInput.value.trim();
+            if (name && phone && state.point && state.presta && state.date && state.time) {
+                var msg = [
+                    'Bonjour BM_Repair 👋',
+                    'Je souhaite réserver :',
+                    '📍 Point : ' + state.point,
+                    '💆 Prestation : ' + state.presta.cat + ' - ' + state.presta.name,
+                    '💰 Tarif : ' + state.presta.price + ' FCFA',
+                    '📅 Date : ' + fmtDate(state.date),
+                    '🕐 Heure : ' + state.time,
+                    '👤 Nom : ' + name,
+                    '📞 Tél : ' + phone,
+                    'Merci !'
+                ].join('\n');
+                waBtn.href = 'https://wa.me/221774674949?text=' + encodeURIComponent(msg);
+                waBtn.style.display = 'flex';
+                waNote.style.display = 'none';
+            } else {
+                waBtn.style.display = 'none';
+                waNote.style.display = 'block';
+            }
+        }
+
+        /* ─── Navigation buttons ─── */
+        btnNext.addEventListener('click', function () {
+            if (step < totalSteps && validate()) { goingBack = false; goTo(step + 1); }
+        });
+        btnPrev.addEventListener('click', function () {
+            if (step > 1) { goingBack = true; goTo(step - 1); }
+        });
+
+        /* ─── Init ─── */
+        updateNav();
+        updateProgress();
+
+    })();
+    </script>
+</body>
+</html>
